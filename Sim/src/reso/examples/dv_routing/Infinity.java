@@ -13,6 +13,7 @@ package reso.examples.dv_routing;
 import reso.common.Network;
 import reso.common.Node;
 import reso.ip.IPAddress;
+import reso.ip.IPHost;
 import reso.ip.IPInterfaceAdapter;
 import reso.ip.IPLayer;
 import reso.ip.IPRouter;
@@ -64,37 +65,40 @@ public class Infinity {
             setupRoutingProtocol(network, "R1");
                 
             // Run simulation -- first convergence
+            /*
+            System.out.println("Before metric update");
             scheduler.run();
-                
+            */  
             // Display forwarding table for each node
             FIBDumper.dumpForAllRouters(network);			
                 
             // Change topology/nodes properties here ..
-
-            // Run simulation for 0.1 sec 
-            scheduler.runUntil(0.100);
+            try {
+    			// Update metric R3 eth1 -> R1 eth1
+    			((IPHost) network.getNodeByName("R3")).getIPLayer().getInterfaceByName("eth1").setMetric(300);
+    			
+			//TEST
+    			System.out.println("New metric : " + ((IPHost) network.getNodeByName("R3")).getIPLayer().getInterfaceByName("eth1").getMetric());
+    		}catch(Exception e) {
+    			System.err.println(e.getMessage());
+    			e.printStackTrace(System.err);
+    		}
+            
+            // Run simulation for 10 sec 
+            System.out.println("After metric update");
+            //Reload with new metric
+            setupRoutingProtocol(network, "R1");
+            //launch test
+            scheduler.runUntil(10);
                             
             // Display again forwarding table for each node
+            /*
+            System.out.println("Dump for all routers");
             FIBDumper.dumpForAllRouters(network);
+            */
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	
 	}
-	/*
-	 // Soluce proposée pour aider : 
-	public static final String TOPO_FILE = "reso/data/topology.txt";
-	public static void main(String [] args) {
-		String filename = Demo.class.getClassLoader().getResource(TOPO_FILE).getFile();
-		AbstractScheduler scheduler = new Scheduler();
-		
-		try {
-			Network network = NetworkBuilder.loadTopology(filename, scheduler);
-			
-			((IPHost) network.getNodeByName("R2")).getIPLayer().getInterfaceByName("eth0").setMetric(200);
-		}catch(Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace(System.err);
-		}
-	}
-	*/
 }
