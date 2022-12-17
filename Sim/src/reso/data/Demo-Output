@@ -1,8 +1,7 @@
 WITH : 
-String filename= "src/reso/data/demo-graph.txt";
-AbstractScheduler scheduler= new Scheduler();
-Network network= NetworkBuilder.loadTopology(filename, scheduler);
-setupRoutingProtocol(network, "R1");
+toplogy= "src/reso/data/demo-graph.txt";
+[...]
+Destination -> R1 (A)
 
 ------------------------------------------------------------
 58ms R2 eth0 : src=192.168.0.1, dst=255.255.255.255,proto=1, payload=[ DV[192.168.2.1,0]]
