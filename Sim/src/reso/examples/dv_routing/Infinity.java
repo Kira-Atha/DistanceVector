@@ -10,17 +10,9 @@
  ******************************************************************************/
 package reso.examples.dv_routing;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
-
 import reso.common.Network;
 import reso.common.Node;
 import reso.ip.IPAddress;
-import reso.ip.IPHost;
 import reso.ip.IPInterfaceAdapter;
 import reso.ip.IPLayer;
 import reso.ip.IPRouter;
@@ -28,9 +20,8 @@ import reso.scheduler.AbstractScheduler;
 import reso.scheduler.Scheduler;
 import reso.utilities.FIBDumper;
 import reso.utilities.NetworkBuilder;
-import reso.utilities.NetworkGrapher;
 
-public class Demo {
+public class Infinity {
 	
 	private static IPAddress getRouterID(IPLayer ip) {
 		IPAddress routerID= null;
@@ -67,7 +58,7 @@ public class Demo {
 	
 	public static void main(String [] args) {
 		try {
-            String filename= "src/reso/data/topology.txt";
+            String filename= "src/reso/data/demo-graph.txt";
             AbstractScheduler scheduler= new Scheduler();
             Network network= NetworkBuilder.loadTopology(filename, scheduler);
             setupRoutingProtocol(network, "R1");
