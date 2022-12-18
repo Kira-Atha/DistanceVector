@@ -10,19 +10,24 @@
  ******************************************************************************/
 package reso.examples.dv_routing;
 
+import java.util.Collection;
+
+import reso.common.Interface;
+import reso.common.InterfaceAttrListener;
 import reso.common.Network;
 import reso.common.Node;
 import reso.ip.IPAddress;
 import reso.ip.IPHost;
 import reso.ip.IPInterfaceAdapter;
 import reso.ip.IPLayer;
+import reso.ip.IPRouteEntry;
 import reso.ip.IPRouter;
 import reso.scheduler.AbstractScheduler;
 import reso.scheduler.Scheduler;
 import reso.utilities.FIBDumper;
 import reso.utilities.NetworkBuilder;
 
-public class Infinity {
+public class Infinity implements InterfaceAttrListener {
 	
 	private static IPAddress getRouterID(IPLayer ip) {
 		IPAddress routerID= null;
@@ -92,13 +97,47 @@ public class Infinity {
             scheduler.runUntil(10);
                             
             // Display again forwarding table for each node
-            /*
-            System.out.println("Dump for all routers");
+      
+            System.out.println("Dump for all routers after metric updated");
             FIBDumper.dumpForAllRouters(network);
-            */
+            
+// 3.3 (STANDBY) => Test solution infinite count issue => Poisoned Reverse
+           // Je veux modifier le coût à l'infini pour un chemin  R3 -> R4 par exemple ? 
+            
+            Node nodeR3 = network.getNodeByName("R3");
+            
+            IPHost ipHostR3 = (IPHost)nodeR3;
+            IPLayer ipLayerR3 = ipHostR3.getIPLayer();
+            //Collection<IPRouteEntry> allRoutes = ipLayerR3.getRoutes();
+            
+
+            //
+            IPInterfaceAdapter interfaceR3 = ipLayerR3.getInterfaceByName("eth0");
+           
+            int infinity = (int) (Double.POSITIVE_INFINITY);
+            
+            // COMMENT SET LE COUT ????? CLASSE DVRoutineTable.java -> Static Class Entry -> updateLinkcost 
+            DVRoutingTable.Entry entry = new DVRoutingTable.Entry(IPAddress.getByAddress(10,0,0,4),interfaceR3.getMetric(),interfaceR3);
+            
+    //PAS DU TOUT SUR??? Ce n'est pas la métrique je veux modifier mais bien le coût. UpdateLinkCost ne modifie pas le coût en soi !!!!
+            interfaceR3.setMetric(infinity);
+            entry.updateLinkCost();
+            
+          //Reload with new metric
+            setupRoutingProtocol(network, "R1");
+            //launch test
+            System.out.println("Reverse poisoned???");
+            scheduler.runUntil(10);
+            
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	
+	}
+
+	@Override
+	public void attrChanged(Interface iface, String attr) {
+		
+		
 	}
 }

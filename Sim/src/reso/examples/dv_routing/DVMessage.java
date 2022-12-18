@@ -51,7 +51,7 @@ implements Message {
 			s+= " " + dv;
 		return s;
 	}
-
+	
 	@Override
 	public int getByteLength() {
 		return dvs.size() * (IPAddress.ANY.getByteLength());
